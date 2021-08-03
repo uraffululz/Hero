@@ -20,6 +20,14 @@
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
+                },
+                {
+                    "name": "Find Clue",
+                    "type": "Button",
+                    "id": "5888c53c-acc0-428d-9fe7-b705d9f5401c",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
                 }
             ],
             "bindings": [
@@ -143,6 +151,17 @@
                     "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "0774d265-1dfc-45e5-85cd-24c0e3804975",
+                    "path": "<Mouse>/backButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Find Clue",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         },

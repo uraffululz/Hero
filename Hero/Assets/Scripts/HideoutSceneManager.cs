@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class HideoutSceneManager : MonoBehaviour {
 
@@ -16,6 +17,18 @@ public class HideoutSceneManager : MonoBehaviour {
 
 
     void Update() {
-        
+		if (Keyboard.current.spaceKey.isPressed) {
+			CreateEvent();
+		}
     }
+
+
+	public void CreateEvent() {
+		ClueMaster.ChooseEventParameters();
+	}
+
+
+	public void OnFindClue() {
+		ClueMaster.GetAClue();
+	}
 }
