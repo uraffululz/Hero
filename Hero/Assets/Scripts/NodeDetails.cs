@@ -20,7 +20,7 @@ public class NodeDetails : MonoBehaviour {
 	[SerializeField] int myLocationScene;
 
 	public bool isGangHQ;
-	[SerializeField] ClueMaster.gangs myGang;
+	public ClueMaster.gangs myGang;
 	Color gangColor;
 
 	public bool battlingForControl = false;
@@ -38,21 +38,26 @@ public class NodeDetails : MonoBehaviour {
 		///myNeighbors = myNodeObject.neighborNodes;
 
 		//SetupHighTierActivities();
+		///TODO Set nodeNum manually in the Inspector, just to reduce the chances of some random fuck-up
+		nodeNum = nodeManager.nodeList.IndexOf(gameObject);
+
+		if (NodeManager.nodeGangs[nodeNum] == ClueMaster.gangs.none) {
+			NodeManager.nodeGangs[nodeNum] = myGang;
+		}
+		SetMyGangInfluence();
 
 		DetermineIfEventHappeningHere();
 	}
 
 
 	void Start () {
-		nodeNum = nodeManager.nodeList.IndexOf(gameObject);
 
-		SetupMyNeighborhood();
+		//SetupMyNeighborhood();
 
 		//if (NodeManager.nodeGangs[nodeNum] == null || NodeManager.nodeGangs[nodeNum] == "") {
 		//	///NodeManager.nodeGangs[nodeNum] = myLocManager.gangControllingLoc;
 		//}
 
-		SetMyGangInfluence();
 	}
 
 
@@ -138,7 +143,7 @@ public class NodeDetails : MonoBehaviour {
 	}
 
 
-	void SetupMyNeighborhood() {
+	//void SetupMyNeighborhood() {
 //TODOLATER Just set this shit explicitly, in the inspector, after the placements of the locations and neighborhoods are finally decided. It will take less computing power then.
 		//foreach (GameObject node in nodeManager.nodeList) {
 		//	SphereCollider nodeCol = node.GetComponent<SphereCollider>();
@@ -150,18 +155,18 @@ public class NodeDetails : MonoBehaviour {
 		//	neighborObjects.Remove(gameObject);
 		//}
 
-		if (myNeighborhood == null) {
-			foreach (GameObject neighborhood in nodeManager.neighborhoods) {
-				if (neighborhood.GetComponent<MeshCollider>().bounds.Intersects(gameObject.GetComponent<SphereCollider>().bounds)) {
-					myNeighborhood = neighborhood;
-				}
-			}
-		}
-	}
+	//	if (myNeighborhood == null) {
+	//		foreach (GameObject neighborhood in nodeManager.neighborhoods) {
+	//			if (neighborhood.GetComponent<MeshCollider>().bounds.Intersects(gameObject.GetComponent<SphereCollider>().bounds)) {
+	//				myNeighborhood = neighborhood;
+	//			}
+	//		}
+	//	}
+	//}
 
 
 	public void SetMyGangInfluence() {
-		//myGang = NodeManager.nodeGangs[nodeNum];
+		myGang = NodeManager.nodeGangs[nodeNum];
 
 		switch (myGang) {
 			case ClueMaster.gangs.The_Jackals:
