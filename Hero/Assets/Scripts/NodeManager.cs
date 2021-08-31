@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 public class NodeManager : MonoBehaviour {
 
 	//DayNightCycle DNCycle;
+	[SerializeField] MapSceneManager mapSceneMan;
 
 	public GameObject[] neighborhoods;
 	public List<GameObject> nodeList = new List<GameObject>();
@@ -30,7 +31,7 @@ public class NodeManager : MonoBehaviour {
 	void Start () {
 		//DNCycle.daylightEvent += GangWarOnNode;
 		InitiateGangWars(2);
-
+		//mapSceneMan.SetHighTierParameters();
 	}
 
 
@@ -102,7 +103,7 @@ public class NodeManager : MonoBehaviour {
 					///The attacking gang takes control of the neighboring node
 					//neighborDeets.myGang = nodeDeets.myGang;
 					nodeGangs[neighborDeets.nodeNum] = nodeDeets.myGang;
-					neighborDeets.SetMyGangInfluence();
+					//neighborDeets.SetMyGangInfluence();
 					Debug.Log(nodeDeets.myGang + " took control of " + neighborToFight.name);
 
 		//if (!nodeDeets.isGangHQ) {
@@ -136,6 +137,9 @@ public class NodeManager : MonoBehaviour {
 		}
 		//}
 
+		foreach (GameObject node in nodeList) {
+			node.GetComponent<NodeDetails>().SetMyGangInfluence();
+		}
 		
 	}
 }

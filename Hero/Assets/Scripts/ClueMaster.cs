@@ -19,7 +19,7 @@ public static class ClueMaster {
 	public static int maxNumberOfClues = 9;
 	public static int numberOfCluesFound = 0;
 	public static string mostRecentClue = "";
-	public static List<int> clueTypes = new List<int>();
+	//public static List<int> clueTypes = new List<int>();
 	
 	///Declaring and initializing LOCATION clue variables
 	//static int whichLocation = 0;
@@ -131,6 +131,8 @@ public static class ClueMaster {
 
 
 	public static void GetAClue() {
+		List<int> clueTypes = new List<int>();
+
 		if (numberOfCluesFound < maxNumberOfClues) {
 			if (locationCluesFound < 3) {
 				clueTypes.Add(1);
@@ -165,7 +167,7 @@ public static class ClueMaster {
 					break;
 			}
 
-			clueTypes.Clear();
+			//clueTypes.Clear();
 			numberOfCluesFound++;
 			//Debug.Log("Total clues found " + numberOfCluesFound);
 		}

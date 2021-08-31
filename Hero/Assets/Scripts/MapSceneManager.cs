@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class MapSceneManager : MonoBehaviour {
 
-	[SerializeField] public MapUIManager UIMan {get; private set;}
+	[SerializeField] MapUIManager UIMan;
 
 	[SerializeField] List<GameObject> mapNodes;
 	public static ClueMaster.locations HTLocation;
@@ -24,6 +24,17 @@ public class MapSceneManager : MonoBehaviour {
 	public int nextSceneIndex;
 
 
+
+	void Awake () {
+		SetHighTierParameters();
+	}
+
+
+	void Start () {
+		//SetHighTierParameters();
+	}
+
+
 	public void SetHighTierParameters() {
 		int HTLocationIndex = Random.Range(1, System.Enum.GetValues(typeof(ClueMaster.locations)).Length);
 		HTLocation = (ClueMaster.locations) HTLocationIndex;
@@ -32,6 +43,15 @@ public class MapSceneManager : MonoBehaviour {
 		HTActivity = (ClueMaster.attackTypes) HTActivityIndex;
 
 		highTierActSet = true;
+
+		UIMan.policeAlertText.text = "High tier " + HTActivity.ToString() + " at " + HTLocation.ToString();
+
+		//for (int i = 0; i < mapNodes.Count; i++) {
+		//	if (mapNodes[i].GetComponent<NodeDetails>().myLocation == HTLocation) {
+		//		mapNodes[i].GetComponent<MeshRenderer>().material.color = Color.yellow;
+		//		break;
+		//	}
+		//}
 	}
 
 	public void LoadNextScene() {

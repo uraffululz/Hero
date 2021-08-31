@@ -15,7 +15,7 @@ public class NodeDetails : MonoBehaviour {
 	//public List<GameObject> neighborObjects = new List<GameObject>();
 	public GameObject[] myNeighbors;
 
-	[SerializeField] ClueMaster.locations myLocation;
+	public ClueMaster.locations myLocation;
 	public int nodeNum;
 	[SerializeField] int myLocationScene;
 
@@ -44,7 +44,7 @@ public class NodeDetails : MonoBehaviour {
 		if (NodeManager.nodeGangs[nodeNum] == ClueMaster.gangs.none) {
 			NodeManager.nodeGangs[nodeNum] = myGang;
 		}
-		SetMyGangInfluence();
+		//SetMyGangInfluence();
 
 		DetermineIfEventHappeningHere();
 	}
@@ -82,27 +82,31 @@ public class NodeDetails : MonoBehaviour {
 			//MapSceneManager.currentLocation = myLocation;
 			mapManager.nextSceneIndex = myLocationScene;
 
+			Color activityColor = Color.white;
+
 			//DetermineIfEventHappeningHere();
 
 			if (isEventHappeningHere) {
 				//CrimeManager.isHighTierActivityHere = true;
 				//CrimeManager.SetHTCrimeRates(ClueMaster.attackType, isEventHappeningHere, ClueMaster.gang, myLocation);
-				CrimeManager.SetCrime(true, true, myLocation, ClueMaster.gang, ClueMaster.attackType);
+				CrimeManager.SetCrime(true, true, myLocation, ClueMaster.gang);
+				activityColor = Color.green;
 			}
 			else if (myLocation == MapSceneManager.HTLocation) {// && MapSceneManager.HTActivity != ClueMaster.attackTypes.none) {
 				//The Nightly Activity from the CrimeManager script becomes equal to "myHighTierActivity"
 				//CrimeManager.isHighTierActivityHere = true;
-				CrimeManager.SetCrime(false, true, myLocation, myGang, MapSceneManager.HTActivity);
-				//Debug.Log("Location is host to a high-tier activity");
+				CrimeManager.SetCrime(false, true, myLocation, myGang);
+				activityColor = Color.yellow;
+				Debug.Log("Location is host to the high-tier activity");
 			}
 			else {
 				//Debug.Log("Location is host to a minor activity");
 				//CrimeManager.isHighTierActivityHere = false;
 				//CrimeManager.isEvent = false;
 				//GetComponent<MeshRenderer>().material.color = Color.black;
-				CrimeManager.SetCrime(false, false, myLocation, myGang, ClueMaster.attackTypes.none);
+				CrimeManager.SetCrime(false, false, myLocation, myGang);
 			}
-			UIManager.OpenActivityUI();
+			UIManager.OpenActivityUI(activityColor);
 		}
 	}
 
@@ -185,7 +189,13 @@ public class NodeDetails : MonoBehaviour {
 				gangColor = Color.gray;
 				break;
 		}
-		GetComponent<MeshRenderer>().material.color = gangColor;
+
+		if (myLocation == MapSceneManager.HTLocation) {
+			GetComponent<MeshRenderer>().material.color = Color.yellow;
+		}
+		else {
+			GetComponent<MeshRenderer>().material.color = gangColor;
+		}
 	}
 
 }

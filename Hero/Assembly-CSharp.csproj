@@ -55,7 +55,7 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\MapUIManager.cs" />
     <Compile Include="Assets\Scripts\HideoutSceneManager.cs" />
-    <Compile Include="Assets\Scripts\ArenaSceneManagement.cs" />
+    <Compile Include="Assets\Scripts\ArenaSceneManager.cs" />
     <Compile Include="Assets\Scripts\InteractionScripts\UIInteractor.cs" />
     <Compile Include="Assets\Scripts\UIManager.cs" />
     <Compile Include="Assets\Scripts\InteractionScripts\Interactable.cs" />

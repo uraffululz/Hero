@@ -14,11 +14,13 @@ public static class CrimeManager {
 	
 	public static ClueMaster.attackTypes activity;
 	public static bool isEvent = false;
-	//public static bool isHighTierActivityHere = false;
+	public static bool isHighTier = false;
 
-	public static int crimeRate;
+	public static int currentCrimeRate;
+	static int crimeRate;
 	public static string crimeStars;
 	static bool HTCrimeRateSet = false;
+	static int HTCrimeRate;
 	static int eventCrimeRate;
 	static bool eventCrimeRateSet = false;
 
@@ -36,42 +38,47 @@ public static class CrimeManager {
 
 	
 
-	public static void SetCrime (bool isAnEvent, bool isHighTier, ClueMaster.locations passedLoc, ClueMaster.gangs passedGang, ClueMaster.attackTypes passedAct) {
-		isEvent = isAnEvent; //"isEvent" may be redundant
+	public static void SetCrime (bool isAnEvent, bool isHT, ClueMaster.locations passedLoc, ClueMaster.gangs passedGang) {
+		isEvent = isAnEvent;
+		isHighTier = isHT;
 		activityLoc = passedLoc;
 		gangInvolved = passedGang;
-		crimeRate = Random.Range(1, 6);
 
 		if (isEvent) {
 			///An Event is happening here
 			if (!eventCrimeRateSet) {
 				eventCrimeRate = Random.Range(1, 6);
-				activityLoc = ClueMaster.location; //Redundant? (is declared above in this method)
-				gangInvolved = ClueMaster.gang; //Redundant? (is declared above in this method)
-				activity = ClueMaster.attackType;
+				//activityLoc = ClueMaster.location; //Redundant? (is declared above in this method)
+				//gangInvolved = ClueMaster.gang; //Redundant? (is declared above in this method)
+				//activity = ClueMaster.attackType;
 
 				eventCrimeRateSet = true;
 			}
-			SetCrimeStars(true);
+			activity = ClueMaster.attackType;
+
+			SetCrimeStars(eventCrimeRate);
 		}
 		else if (isHighTier) {
 			///A High-Tier activity is happening here
 			if (!HTCrimeRateSet) {
-//TOMAYBEDO Create a persistent HTCrimeRate variable, like the "eventCrimeRate" used above, so that it doesn't change if the player leaves the node and returns
-				//crimeRate = Random.Range(1, 6);
+///TOMAYBEDO Create a persistent HTCrimeRate variable, like the "eventCrimeRate" used above, so that it doesn't change if the player leaves the node and returns
+				HTCrimeRate = Random.Range(1, 6);
 				//activityLoc = passedLoc;
 				//gangInvolved = passedGang;
-				activity = passedAct;
+				//activity = passedAct;
 
 				HTCrimeRateSet = true;
 			}
-			SetCrimeStars(false);
+			activity = MapSceneManager.HTActivity;
+			SetCrimeStars(HTCrimeRate);
 		}
 		else {
 			///Just a normal, random activity happening here
 			int activityIndex = Random.Range(1, System.Enum.GetValues(typeof(ClueMaster.attackTypes)).Length);
 			activity = (ClueMaster.attackTypes) activityIndex;
-			SetCrimeStars(false);
+			crimeRate = Random.Range(1, 6);
+
+			SetCrimeStars(crimeRate);
 		}
 		
 		//SetHTActivityParameters(activity, enemyHPBonus, enemyFPBonus, enemyStrBonus, enemyAgiBonus, enemyIntBonus,
@@ -79,19 +86,13 @@ public static class CrimeManager {
 	}
 
 
-	static void SetCrimeStars(bool isEvent) {
+	static void SetCrimeStars(int rate) {
+		currentCrimeRate = rate;
 		crimeStars = "";
 
-		//if (isEvent) {
-			for (int i = 1; i <= (isEvent ? eventCrimeRate : crimeRate); i++) {
-				crimeStars += "*";
-			}
-		//}
-		//else {
-			//for (int i = 1; i <= crimeRate; i++) {
-			//	crimeStars += "*";
-			//}
-		//}
+		for (int i = 1; i <= rate; i++) {
+			crimeStars += "*";
+		}
 	}
 
 

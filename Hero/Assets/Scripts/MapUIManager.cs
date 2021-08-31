@@ -14,7 +14,7 @@ public class MapUIManager : MonoBehaviour {
 	[SerializeField] Text DifficultyText;
 
 	[SerializeField] Image policeAlertBG;
-	[SerializeField] Text policeAlertText;
+	public Text policeAlertText;
 	Color bgOnColor = new Color(1, 1, 1, .2f);
 	Color bgOffColor = new Color(1, 1, 1, 0f);
 
@@ -41,10 +41,12 @@ public class MapUIManager : MonoBehaviour {
 	}
 
 
-	public void OpenActivityUI() {
+	public void OpenActivityUI(Color textColor) {
 		gangText.text = CrimeManager.gangInvolved.ToString();
 		activityText.text = CrimeManager.activity.ToString();
 		DifficultyText.text = CrimeManager.crimeStars;
+
+		DifficultyText.color = textColor;
 
 		OpenUI(activityBG);
 	}
