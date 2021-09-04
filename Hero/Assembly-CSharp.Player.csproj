@@ -68,6 +68,7 @@
     <Compile Include="Assets\Scripts\CrimeManager.cs" />
     <Compile Include="Assets\Scripts\MapMovement.cs" />
     <Compile Include="Assets\Scripts\PlayerMove.cs" />
+    <Compile Include="Assets\DetectiveUIManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

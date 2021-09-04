@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.InputSystem;
 
 public class ArenaSceneManager : MonoBehaviour {
 
@@ -27,7 +28,7 @@ public class ArenaSceneManager : MonoBehaviour {
 
 	[SerializeField] public List<Bounds> spawnBounds;
 
-	public int gainedNotoriety = CrimeManager.baseNotoriety;
+	public int gainedNotoriety;
 
 
 	private void Awake() {
@@ -67,7 +68,13 @@ public class ArenaSceneManager : MonoBehaviour {
 
 
 	void Update () {
-		
+		if (Keyboard.current.spaceKey.wasPressedThisFrame) {
+			ActivitySuccess();
+		}
+
+		if (Keyboard.current.fKey.wasPressedThisFrame) {
+			ActivityFailed();
+		}
 	}
 
 
@@ -78,8 +85,21 @@ public class ArenaSceneManager : MonoBehaviour {
 
 
 	void ActivitySetup (ClueMaster.attackTypes activity) {
+		activity = ClueMaster.attackTypes.none;
+
 		switch (activity) {
 			case ClueMaster.attackTypes.none:
+				gainedNotoriety = 100 * CrimeManager.currentCrimeRate;
+
+				if (CrimeManager.isEvent) {
+					print("Event activity setup");
+				}
+				else if (CrimeManager.isHighTier) {
+					print("High Tier activity setup");
+				}
+				else {
+					print("Regular actvity setup");
+				}
 				break;
 			case ClueMaster.attackTypes.Arson:
 				break;
@@ -98,15 +118,7 @@ public class ArenaSceneManager : MonoBehaviour {
 			case ClueMaster.attackTypes.Vandalism:
 				break;
 			default:
-				if (CrimeManager.isEvent) {
-					print("Event activity setup");
-				}
-				else if (CrimeManager.isHighTier) {
-					print("High Tier activity setup");
-				}
-				else {
-					print("Regular actvity setup");
-				}
+				Debug.LogError("YOU FUCKED UP HERE");
 				break;
 		}
 	}
@@ -186,9 +198,13 @@ public class ArenaSceneManager : MonoBehaviour {
 
 
 	public void ActivitySuccess () {
-		Debug.Log("Activity SUCCEEDED");
+		//Debug.Log("Activity SUCCEEDED");
+		completionText.text = "Activity Succeeded";
 
 		clueText.text = "";
+		eventResults.text = "One of the city's gangs is planning something big";
+
+		DetermineEventProgress();
 
 		if (ClueMaster.eventOngoing) {
 			if (CrimeManager.isEvent) {
@@ -196,30 +212,37 @@ public class ArenaSceneManager : MonoBehaviour {
 				eventResults.text = "Event completed";
 				ClueMaster.EventSuccess();
 			}
-			else {
-				eventResults.text = ("One of the city's gangs is planning something big");
-				//DetermineIfClueFound();
-			}
-		}
-		else {
-			ClueMaster.ChooseEventParameters();
-			//DetermineIfClueFound();
+			//#region TODO Reconcile this shit into something more efficient
+			//			else {
+			//				eventResults.text = ("One of the city's gangs is planning something big");
+			//				DetermineEventProgress();
+			//			}
+			//		}
+			//		else {
+			//			//ClueMaster.ChooseEventParameters();
+			//			DetermineEventProgress();
 
-			eventResults.text = ("One of the city's gangs is planning something big");			
+			//			eventResults.text = ("One of the city's gangs is planning something big");			
 		}
+			//#endregion
 
 		FinishActivity();
 	}
 
 
 	public void ActivityFailed () {
-		Debug.Log("Activity FAILED");
+		//Debug.Log("Activity FAILED");
+		completionText.text = "Activity Failed";
+		gainedNotoriety -= 100 * CrimeManager.currentCrimeRate;
 
 		if (ClueMaster.eventOngoing) {
 			if (CrimeManager.isEvent) {
 				eventResults.text = "Event failed";
 				ClueMaster.EventFailure();
 			}
+		}
+		else {
+			clueText.text = "No clue found";
 		}
 
 		FinishActivity();
@@ -232,17 +255,18 @@ public class ArenaSceneManager : MonoBehaviour {
 			MapSceneManager.ResetHighTier();
 		}
 
-		//Display "activity completion" UI menu
-		completionDisplay.GetComponent<Animator>().SetBool("compActivated", true);
+		///Display "activity completion" UI menu
+		completionDisplay.gameObject.SetActive(true);
+		//completionDisplay.GetComponent<Animator>().SetBool("compActivated", true);
 
-		//Add the gainedNotoriety total to the player's notoriety stat and display both amounts
+		///Add the gainedNotoriety total to the player's notoriety stat and display both amounts
 		///StatsPlayer.notoriety += gainedNotoriety;
 		string gainedOrLost = ((gainedNotoriety >= 0) ? "Notoriety gained: " : "Notoriety lost: ");
-		///notorietyText.text = (gainedOrLost + gainedNotoriety + " || Total: " + StatsPlayer.notoriety);
+		notorietyText.text = (gainedOrLost + gainedNotoriety);/// + " || Total: " + StatsPlayer.notoriety);
 	}
 
 
-	void DetermineIfClueFound() {
+	void DetermineEventProgress() {
 		///%Chance of finding a clue is based on CrimeManager.currentCrimeRate
 		
 ////TODO Knock down to 10% chance or so later (ALSO DO THE SAME ELSEWHERE, WHENEVER DETERMINING "chanceClueFound")
@@ -255,7 +279,7 @@ public class ArenaSceneManager : MonoBehaviour {
 //			chanceClueFound = (int)(chanceClueFound / 2);
 //		}
 
-//		if (ClueMaster.numberOfCluesFound < ClueMaster.maxNumberOfClues) {
+		if (ClueMaster.eventOngoing && ClueMaster.numberOfCluesFound < ClueMaster.maxNumberOfClues) {
 //			if (CrimeManager.isHighTierActivityHere) {
 //				//if (CrimeManager.gangInvolved == ClueMaster.gangInvolvedInEvent) {
 //					if (chanceClueFound < 100) {
@@ -268,24 +292,28 @@ public class ArenaSceneManager : MonoBehaviour {
 //			else {
 //				//if (NightManager.gangInvolved == ClueMaster.gangInvolvedInEvent) {
 //					if (chanceClueFound < 100) {
-//						ClueMaster.GetAClue();
-//						//Display each clue when found
-//						clueText.text = ("Clue found: " + ClueMaster.mostRecentClue);
+						ClueMaster.UncoverEventElement();
+						//ClueMaster.GetAClue();
+						///Display each clue when found
+						clueText.text = ("Clue found: " + ClueMaster.mostRecentClue);
 //					}
 //				//}
 //			}
-//		}
+		}
+		else {
+			clueText.text = "Max number of clues found. Access Hideout computer to solve event";
+		}
 	}
 
 
 	public void ReturnToMap () {
 		//CrimeManager.isHighTierActivityHere = false;
-		SceneManager.LoadScene("TestMapScene");
+		SceneManager.LoadScene(1);
 	}
 
 
 	public void ReturnToHideout () {
 		//CrimeManager.isHighTierActivityHere = false;
-		SceneManager.LoadScene("HideoutScene");
+		SceneManager.LoadScene(0);
 	}
 }

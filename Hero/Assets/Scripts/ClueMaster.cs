@@ -10,7 +10,7 @@ public static class ClueMaster {
 	public static bool eventUncovered = false;
 
 	public static int nightsUntilEventEnds = 7;
-	public static bool notifyResultsOfEventFailure = true;
+	//public static bool notifyResultsOfEventFailure = true;
 
 	public static bool matchLocation = false;
 	public static bool matchGang = false;
@@ -50,14 +50,14 @@ public static class ClueMaster {
 
 	///Declaring and initializing GANG INVOLVED clue variables
 	//static int whichGang = 0;
-	public enum gangs {none, The_Jackals, The_Clone_Army, The_Eldritch, The_Leslies };
+	public enum gangs {none, The_Jackals, The_Clone_Army, The_Eldritch, The_Leslies};
 	//public static string gangInvolvedInEvent;
 	static string[,] gangClues = new string[/*Same as gangs[]*/5, 3] 
 		{/*[0] none*/{"none", "none", "none"},
 			/*[1] The Jackals*/ {"The Jackals Clue #1", "The Jackals Clue #2", "The Jackals Clue #3"},
 			/*[2] The Clone Army*/ {"The Clone Army Clue #1", "The Clone Army Clue #2", "The Clone Army Clue #3"},
 			/*[3] The Ember-kin*/ {"The Eldritch Clue #1", "The Eldritch Clue #2", "The Eldritch Clue #3"},
-			/*[4] The Lezzies*/ {"The Leslies Clue #1", "The Leslies Clue #2", "The Leslies Clue #3"}
+			/*[4] The Leslies*/ {"The Leslies Clue #1", "The Leslies Clue #2", "The Leslies Clue #3"}
 		};
 	public static List<string> relevantGangClues = new List<string>();
 	public static string[] knownGangClues = new string[3] { "", "", "" };
@@ -92,16 +92,19 @@ public static class ClueMaster {
 		if (numberOfCluesFound == 0) {
 			ChooseEventParameters();
 		}
-
-		GetAClue();
+		
+		//if (numberOfCluesFound < maxNumberOfClues) {
+			GetAClue();
+		//}
+		//else {
+			//Debug.Log("You have found the maximum number of clues");
+		//}
 	}
 
 
 	///This is run when the player finds their FIRST CLUE during random nightly activities, and the event is initialized
 	public static void ChooseEventParameters () {
 		ResetEvent();
-
-		eventOngoing = true;
 
 		///Determine WHERE the event will take place
 		int whichLocation = Random.Range(1, System.Enum.GetValues(typeof(locations)).Length);//(1, locationClues.GetUpperBound(0) + 1);
@@ -126,14 +129,17 @@ public static class ClueMaster {
 			relevantAttackTypeclues.Add(attackTypeClues[whichAttackType, i]);
 		}
 
-		Debug.Log("Location: " + location + "/ Gang: " + gang + "/ Attack Type: " + attackType);
+		Debug.Log("Location: " + location + " / Gang: " + gang + " / Attack Type: " + attackType);
+
+		eventOngoing = true;
 	}
 
 
 	public static void GetAClue() {
 		List<int> clueTypes = new List<int>();
 
-		if (numberOfCluesFound < maxNumberOfClues) {
+//TODO You're checking the numberOfCluesFound twice (here, and in ArenaSceneManager's DetermineIfClueFound() method). Reconcile this into one check, either here or there
+//		if (numberOfCluesFound < maxNumberOfClues) {
 			if (locationCluesFound < 3) {
 				clueTypes.Add(1);
 			}
@@ -170,10 +176,10 @@ public static class ClueMaster {
 			//clueTypes.Clear();
 			numberOfCluesFound++;
 			//Debug.Log("Total clues found " + numberOfCluesFound);
-		}
-		else {
-			Debug.Log("You have found the maximum number of clues");
-		}
+//		}
+		//else {
+		//	Debug.Log("You have found the maximum number of clues");
+		//}
 	}
 
 
@@ -191,7 +197,7 @@ public static class ClueMaster {
 		//Debug.Log(relevantCluesList.Count);
 	}
 
-	#region Hopefully Obsolete Methods
+#region Hopefully Obsolete Methods
 
 	static void GetALocationClue() {
 		//TOMAYBEDO Add all of the clues (each of which is probably relevant to at least 2 different buildings) to an array,
@@ -227,7 +233,7 @@ public static class ClueMaster {
 		attackTypeCluesFound++;
 	}
 
-	#endregion
+#endregion
 
 
 	public static void EventUncovered() {
@@ -238,14 +244,14 @@ public static class ClueMaster {
 
 	public static void EventSuccess() {
 		Debug.Log("You successfully completed the event");
-		notifyResultsOfEventFailure = false;
+		//notifyResultsOfEventFailure = false;
 		ResetEvent();
 	}
 
 
 	public static void EventFailure() {
 		Debug.Log("You failed the event");
-		notifyResultsOfEventFailure = true;
+		//notifyResultsOfEventFailure = true;
 		ResetEvent();
 	}
 

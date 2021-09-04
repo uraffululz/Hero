@@ -34,7 +34,6 @@ public class PlayerMove : MonoBehaviour {
 
 	void OnMove (InputValue cxt) {
 		moveDir = new Vector3(cxt.Get<Vector2>().x, 0, cxt.Get<Vector2>().y);
-
 	}
 
 
