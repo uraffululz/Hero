@@ -5,12 +5,16 @@ using UnityEngine.UI;
 
 public class DetectiveUIManager : MonoBehaviour {
 
+	[SerializeField] UIManager UIMan;
+	[SerializeField] GameObject computerUI;
+
+
 	[Header("Location Selections", order = 0)]
 	[SerializeField] Image locationImage;
 	[SerializeField] Sprite[] locationImages;
 	[SerializeField] Text locationText;
 	[SerializeField] string[] locationNames;
-	int currentSelectedLocation = 0;
+	static int selectedLocationIndex = 1;
 	ClueMaster.locations selectedLocation;
 	[SerializeField] Text locationClueText1;
 	[SerializeField] Text locationClueText2;
@@ -21,7 +25,7 @@ public class DetectiveUIManager : MonoBehaviour {
 	[SerializeField] Sprite[] gangImages;
 	[SerializeField] Text gangText;
 	[SerializeField] string[] gangNames;
-	int currentSelectedGang = 0;
+	static int selectedGangIndex = 1;
 	ClueMaster.gangs selectedGang;
 	[SerializeField] Text gangClueText1;
 	[SerializeField] Text gangClueText2;
@@ -33,7 +37,7 @@ public class DetectiveUIManager : MonoBehaviour {
 	[SerializeField] Sprite[] attackImages;
 	[SerializeField] Text attackText;
 	[SerializeField] string[] attackNames;
-	int currentSelectedAttack = 0;
+	static int selectedAttackIndex = 1;
 	ClueMaster.attackTypes  selectedAttack;
 	[SerializeField] Text attackClueText1;
 	[SerializeField] Text attackClueText2;
@@ -44,6 +48,8 @@ public class DetectiveUIManager : MonoBehaviour {
 		SelectLocation(0);
 		SelectGang(0);
 		SelectAttack(0);
+
+		DisplayClueTexts();
 	}
 
 
@@ -63,67 +69,87 @@ public class DetectiveUIManager : MonoBehaviour {
 
 
 	public void SelectLocation(int direction) {
-		currentSelectedLocation += direction;
+		selectedLocationIndex += direction;
 
-		if (currentSelectedLocation < 0) {
-			currentSelectedLocation = locationImages.Length -1;
+		if (selectedLocationIndex < 1) {
+			selectedLocationIndex = locationImages.Length -1;
 		}
-		else if (currentSelectedLocation >= locationImages.Length) {
-			currentSelectedLocation = 0;
+		else if (selectedLocationIndex >= locationImages.Length) {
+			selectedLocationIndex = 1;
 		}
 
-		print(currentSelectedLocation);
+		selectedLocation = (ClueMaster.locations)System.Enum.GetValues(typeof(ClueMaster.locations)).GetValue(selectedLocationIndex);
+		print(selectedLocation.ToString());
 
-		locationText.text = locationNames[currentSelectedLocation];
-		locationImage.sprite = locationImages[currentSelectedLocation];
-
-///TOALSODO Pass in the correct location enum from the ClueMaster
-		///selectedLocation = ClueMaster.locations.none;
+		locationText.text = locationNames[selectedLocationIndex];
+		locationImage.sprite = locationImages[selectedLocationIndex];
 	}
 
 
 	public void SelectGang (int direction) {
-		currentSelectedGang += direction;
+		selectedGangIndex += direction;
 
-		if (currentSelectedGang < 0) {
-			currentSelectedGang = gangImages.Length - 1;
+		if (selectedGangIndex < 1) {
+			selectedGangIndex = gangImages.Length - 1;
 		}
-		else if (currentSelectedGang >= gangImages.Length) {
-			currentSelectedGang = 0;
+		else if (selectedGangIndex >= gangImages.Length) {
+			selectedGangIndex = 1;
 		}
 
-		print(currentSelectedGang);
+		selectedGang = (ClueMaster.gangs) System.Enum.GetValues(typeof(ClueMaster.gangs)).GetValue(selectedGangIndex);
+		print(selectedGang.ToString());
 
-		gangText.text = gangNames[currentSelectedGang];
-		gangImage.sprite = gangImages[currentSelectedGang];
-///TOALSODO Pass in the correct gang enum from the ClueMaster
-
+		gangText.text = gangNames[selectedGangIndex];
+		gangImage.sprite = gangImages[selectedGangIndex];
 	}
 
 
 	public void SelectAttack (int direction) {
-		currentSelectedAttack += direction;
+		selectedAttackIndex += direction;
 
-		if (currentSelectedAttack < 0) {
-			currentSelectedAttack = attackImages.Length - 1;
+		if (selectedAttackIndex < 1) {
+			selectedAttackIndex = attackImages.Length - 1;
 		}
-		else if (currentSelectedAttack >= attackImages.Length) {
-			currentSelectedAttack = 0;
+		else if (selectedAttackIndex >= attackImages.Length) {
+			selectedAttackIndex = 1;
 		}
 
-		print(currentSelectedAttack);
+		selectedAttack = (ClueMaster.attackTypes) System.Enum.GetValues(typeof(ClueMaster.attackTypes)).GetValue(selectedAttackIndex);
+		print(selectedAttack.ToString());
 
-		attackText.text = attackNames[currentSelectedAttack];
-		attackImage.sprite = attackImages[currentSelectedAttack];
-///TOALSODO Pass in the correct attack enum from the ClueMaster
-
+		attackText.text = attackNames[selectedAttackIndex];
+		attackImage.sprite = attackImages[selectedAttackIndex];
 	}
 
 
 	public void ConfirmSelections() {
-//TODO Check if ALL of the selected "detective options" match the current event's parameters, by matching the ClueMaster enums above
-		ClueMaster.matchLocation = true;
-		ClueMaster.matchGang = true;
-		ClueMaster.matchAttackType = true;
+	///Check if ALL of the selected "detective options" match the current event's parameters, by matching the ClueMaster enums above
+		bool allMatches = true;
+
+		if (selectedLocation != ClueMaster.location) {
+			//ClueMaster.matchLocation = true;
+			allMatches = false;
+		}
+
+		if (selectedGang != ClueMaster.gang) {
+			//ClueMaster.matchGang = true;
+			allMatches = false;
+		}
+
+		if (selectedAttack != ClueMaster.attackType) {
+			//ClueMaster.matchAttackType = true;
+			allMatches = false;
+		}
+
+		print("Location match: " + ClueMaster.matchLocation + " | Gang Match: " + ClueMaster.matchGang + " | Attack match: " + ClueMaster.matchAttackType);
+
+		if (allMatches) {
+			ClueMaster.UncoverEvent();
+
+			UIMan.OpenUI(computerUI);
+			UIMan.CloseUI(gameObject);
+
+			UIMan.DetermineDetectiveUIAccess();
+		}
 	}
 }

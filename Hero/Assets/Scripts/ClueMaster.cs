@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public static class ClueMaster {
 
-	public static bool eventOngoing = false;
+	public static bool eventOngoing = false; ///TOMAYBEDO This may only be needed if the chances of finding a clue are NOT 100%
 	public static bool eventUncovered = false;
 
 	public static int nightsUntilEventEnds = 7;
@@ -56,7 +56,7 @@ public static class ClueMaster {
 		{/*[0] none*/{"none", "none", "none"},
 			/*[1] The Jackals*/ {"The Jackals Clue #1", "The Jackals Clue #2", "The Jackals Clue #3"},
 			/*[2] The Clone Army*/ {"The Clone Army Clue #1", "The Clone Army Clue #2", "The Clone Army Clue #3"},
-			/*[3] The Ember-kin*/ {"The Eldritch Clue #1", "The Eldritch Clue #2", "The Eldritch Clue #3"},
+			/*[3] The Eldritch*/ {"The Eldritch Clue #1", "The Eldritch Clue #2", "The Eldritch Clue #3"},
 			/*[4] The Leslies*/ {"The Leslies Clue #1", "The Leslies Clue #2", "The Leslies Clue #3"}
 		};
 	public static List<string> relevantGangClues = new List<string>();
@@ -236,12 +236,12 @@ public static class ClueMaster {
 #endregion
 
 
-	public static void EventUncovered() {
+	public static void UncoverEvent() {
 		Debug.Log("You uncovered the event!");
 		eventUncovered = true;
 	}
 
-
+	#region hopefully obsolete code
 	public static void EventSuccess() {
 		Debug.Log("You successfully completed the event");
 		//notifyResultsOfEventFailure = false;
@@ -254,6 +254,7 @@ public static class ClueMaster {
 		//notifyResultsOfEventFailure = true;
 		ResetEvent();
 	}
+	#endregion
 
 
 	public static void ResetEvent() {

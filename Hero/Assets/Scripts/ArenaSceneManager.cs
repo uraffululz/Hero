@@ -14,11 +14,10 @@ public class ArenaSceneManager : MonoBehaviour {
 	[SerializeField] GameObject civilianPrefab;
 
 	[Header("UI")]
-	[SerializeField] Image completionDisplay;
-	[SerializeField] Text completionText;
-	[SerializeField] Text notorietyText;
-	[SerializeField] Text eventResults;
-	[SerializeField] Text clueText;
+	[SerializeField] ArenaSceneUIManager arenaUIMan;
+
+
+	bool activityStarted = false;
 
 	int enemySpawnNum = 1; //For now
 	int civSpawnNum = 3; //For now
@@ -28,11 +27,16 @@ public class ArenaSceneManager : MonoBehaviour {
 
 	[SerializeField] public List<Bounds> spawnBounds;
 
-	public int gainedNotoriety;
+	public int gainedNotoriety = 0;
+	float HTNotorietyAdjustment = 1.5f;
 
 
 	private void Awake() {
-		SceneSetup();
+		//string activityName = "";
+		//string gangName = "";
+
+		SceneSetup();//ref activityName, ref gangName);
+		arenaUIMan.OpenActivityStartUI();//activityName, gangName);
 
 		//player = GameObject.FindWithTag("Player");
 		//sidekick = GameObject.FindWithTag("Sidekick");
@@ -69,18 +73,25 @@ public class ArenaSceneManager : MonoBehaviour {
 
 	void Update () {
 		if (Keyboard.current.spaceKey.wasPressedThisFrame) {
-			ActivitySuccess();
+			if (activityStarted) {
+				ActivityCompletion(true, "Activity Success", "", "");//, "");
+			}
+			else {
+				arenaUIMan.CloseActivityStartUI();
+				activityStarted = true;
+			}
 		}
 
 		if (Keyboard.current.fKey.wasPressedThisFrame) {
-			ActivityFailed();
+			arenaUIMan.CloseActivityStartUI();
+			ActivityCompletion(false, "Activity Failed", "", "");//, "");
 		}
 	}
 
 
-	void SceneSetup() {
+	void SceneSetup(){//ref string activityType, ref string gangType) {
+		GangSetup(CrimeManager.gangInvolved);
 		ActivitySetup(CrimeManager.activity);
-		///GangSetup(CrimeManager.gangInvolved);
 	}
 
 
@@ -89,8 +100,6 @@ public class ArenaSceneManager : MonoBehaviour {
 
 		switch (activity) {
 			case ClueMaster.attackTypes.none:
-				gainedNotoriety = 100 * CrimeManager.currentCrimeRate;
-
 				if (CrimeManager.isEvent) {
 					print("Event activity setup");
 				}
@@ -121,6 +130,10 @@ public class ArenaSceneManager : MonoBehaviour {
 				Debug.LogError("YOU FUCKED UP HERE");
 				break;
 		}
+
+		//return activity.ToString();
+		arenaUIMan.startActivityText.text = "Activity: " + activity;
+
 	}
 
 
@@ -143,6 +156,10 @@ public class ArenaSceneManager : MonoBehaviour {
 				SpawnEnemies(gangUnits);
 				break;
 		}
+
+		//return gang.ToString();
+		arenaUIMan.startGangText.text = "Gang: " + gang;
+
 	}
 
 
@@ -197,76 +214,136 @@ public class ArenaSceneManager : MonoBehaviour {
 	}
 
 
-	public void ActivitySuccess () {
-		//Debug.Log("Activity SUCCEEDED");
-		completionText.text = "Activity Succeeded";
+	public void ActivityCompletion(bool succeeded, string completionText, string clueText, string eventText) {//, string notorietyText) {
+		arenaUIMan.completionText.text = completionText;
+		arenaUIMan.eventResults.text = "";
 
-		clueText.text = "";
-		eventResults.text = "One of the city's gangs is planning something big";
+		if (succeeded) {
+			gainedNotoriety += (CrimeManager.isHighTier) ? (int)150 * CrimeManager.currentCrimeRate : (int)100 * CrimeManager.currentCrimeRate;
+			print("High Tier = " + CrimeManager.isHighTier + "Difficulty: " + CrimeManager.currentCrimeRate + " | " + "Notoriety = " + gainedNotoriety);
 
-		DetermineEventProgress();
+			DetermineEventProgress();
 
-		if (ClueMaster.eventOngoing) {
-			if (CrimeManager.isEvent) {
-				///If the player has just successfully completed the ongoing event
-				eventResults.text = "Event completed";
-				ClueMaster.EventSuccess();
-			}
-			//#region TODO Reconcile this shit into something more efficient
-			//			else {
-			//				eventResults.text = ("One of the city's gangs is planning something big");
-			//				DetermineEventProgress();
-			//			}
-			//		}
-			//		else {
-			//			//ClueMaster.ChooseEventParameters();
-			//			DetermineEventProgress();
-
-			//			eventResults.text = ("One of the city's gangs is planning something big");			
-		}
-			//#endregion
-
-		FinishActivity();
-	}
-
-
-	public void ActivityFailed () {
-		//Debug.Log("Activity FAILED");
-		completionText.text = "Activity Failed";
-		gainedNotoriety -= 100 * CrimeManager.currentCrimeRate;
-
-		if (ClueMaster.eventOngoing) {
-			if (CrimeManager.isEvent) {
-				eventResults.text = "Event failed";
-				ClueMaster.EventFailure();
-			}
+///Keep the following if-statement for later, when obtaining a clue after success is not 100% guaranteed
+			///if (ClueMaster.eventOngoing) {
+				if (CrimeManager.isEvent) {
+					arenaUIMan.clueText.text = "";
+					arenaUIMan.eventResults.text = "EVENT COMPLETED";
+					//ClueMaster.EventSuccess();
+					ClueMaster.ResetEvent();
+				}
+			///}
+///TOMAYBEDO In the case that there is no "else" concerning the status of ClueMaster.eventOngoing (basically if obtaining a clue is NOT 100% certain), combine the above "if" statements
 		}
 		else {
-			clueText.text = "No clue found";
+			//Debug.Log("Activity FAILED");
+			//completionText.text = "Activity Failed";
+			gainedNotoriety -= (CrimeManager.isHighTier) ? (int) 150 * CrimeManager.currentCrimeRate : (int) 100 * CrimeManager.currentCrimeRate;
+			print("High Tier = " + CrimeManager.isHighTier + "Difficulty: " + CrimeManager.currentCrimeRate + " | " + "Notoriety = " + gainedNotoriety);
+
+			if (ClueMaster.eventOngoing) {
+				if (CrimeManager.isEvent) {
+					arenaUIMan.clueText.text = "";
+					arenaUIMan.eventResults.text = "EVENT FAILED";
+					//ClueMaster.EventFailure();
+					ClueMaster.ResetEvent();
+				}
+				else {
+					arenaUIMan.clueText.text = "No clue found";
+				}
+			}
+			else {
+				arenaUIMan.clueText.text = "No clue found";
+			}
 		}
 
-		FinishActivity();
-	}
-
-
-	void FinishActivity() {
 		if (CrimeManager.activityLoc == MapSceneManager.HTLocation) {// && NodeDetails.myHighTierActivity != ClueMaster.attackTypes.none) {
 
 			MapSceneManager.ResetHighTier();
 		}
 
-		///Display "activity completion" UI menu
-		completionDisplay.gameObject.SetActive(true);
-		//completionDisplay.GetComponent<Animator>().SetBool("compActivated", true);
-
 		///Add the gainedNotoriety total to the player's notoriety stat and display both amounts
 		///StatsPlayer.notoriety += gainedNotoriety;
 		string gainedOrLost = ((gainedNotoriety >= 0) ? "Notoriety gained: " : "Notoriety lost: ");
-		notorietyText.text = (gainedOrLost + gainedNotoriety);/// + " || Total: " + StatsPlayer.notoriety);
+		arenaUIMan.notorietyText.text = (gainedOrLost + gainedNotoriety);/// + " || Total: " + StatsPlayer.notoriety);
+
+		arenaUIMan.OpenCompletionDisplay();
 	}
 
+	#region Hopefully Obsolete Code
 
-	void DetermineEventProgress() {
+	//public void ActivitySuccess () {
+	//	//Debug.Log("Activity SUCCEEDED");
+	//	completionText.text = "Activity Succeeded";
+
+	//	clueText.text = "";
+	//	eventResults.text = "One of the city's gangs is planning something big";
+
+	//	DetermineEventProgress();
+
+	//	if (ClueMaster.eventOngoing) {
+	//		if (CrimeManager.isEvent) {
+	//			///If the player has just successfully completed the ongoing event
+	//			eventResults.text = "Event completed";
+	//			ClueMaster.EventSuccess();
+	//		}
+	//		//#region TODO Reconcile this shit into something more efficient
+	//		//			else {
+	//		//				eventResults.text = ("One of the city's gangs is planning something big");
+	//		//				DetermineEventProgress();
+	//		//			}
+	//		//		}
+	//		//		else {
+	//		//			//ClueMaster.ChooseEventParameters();
+	//		//			DetermineEventProgress();
+
+	//		//			eventResults.text = ("One of the city's gangs is planning something big");			
+	//	}
+	//		//#endregion
+
+	//	FinishActivity();
+	//}
+
+
+	//public void ActivityFailed () {
+	//	//Debug.Log("Activity FAILED");
+	//	completionText.text = "Activity Failed";
+	//	gainedNotoriety -= 100 * CrimeManager.currentCrimeRate;
+
+	//	if (ClueMaster.eventOngoing) {
+	//		if (CrimeManager.isEvent) {
+	//			eventResults.text = "Event failed";
+	//			ClueMaster.EventFailure();
+	//		}
+	//	}
+	//	else {
+	//		clueText.text = "No clue found";
+	//	}
+
+	//	FinishActivity();
+	//}
+
+
+	//void FinishActivity() {
+	//	if (CrimeManager.activityLoc == MapSceneManager.HTLocation) {// && NodeDetails.myHighTierActivity != ClueMaster.attackTypes.none) {
+
+	//		MapSceneManager.ResetHighTier();
+	//	}
+
+	//	///Display "activity completion" UI menu
+	//	completionDisplay.gameObject.SetActive(true);
+	//	//completionDisplay.GetComponent<Animator>().SetBool("compActivated", true);
+
+	//	///Add the gainedNotoriety total to the player's notoriety stat and display both amounts
+	//	///StatsPlayer.notoriety += gainedNotoriety;
+	//	string gainedOrLost = ((gainedNotoriety >= 0) ? "Notoriety gained: " : "Notoriety lost: ");
+	//	notorietyText.text = (gainedOrLost + gainedNotoriety);/// + " || Total: " + StatsPlayer.notoriety);
+	//}
+
+	#endregion
+
+
+	void DetermineEventProgress () {
 		///%Chance of finding a clue is based on CrimeManager.currentCrimeRate
 		
 ////TODO Knock down to 10% chance or so later (ALSO DO THE SAME ELSEWHERE, WHENEVER DETERMINING "chanceClueFound")
@@ -279,7 +356,8 @@ public class ArenaSceneManager : MonoBehaviour {
 //			chanceClueFound = (int)(chanceClueFound / 2);
 //		}
 
-		if (ClueMaster.eventOngoing && ClueMaster.numberOfCluesFound < ClueMaster.maxNumberOfClues) {
+		//if (ClueMaster.eventOngoing) {
+			if (ClueMaster.numberOfCluesFound < ClueMaster.maxNumberOfClues) {
 //			if (CrimeManager.isHighTierActivityHere) {
 //				//if (CrimeManager.gangInvolved == ClueMaster.gangInvolvedInEvent) {
 //					if (chanceClueFound < 100) {
@@ -295,14 +373,18 @@ public class ArenaSceneManager : MonoBehaviour {
 						ClueMaster.UncoverEventElement();
 						//ClueMaster.GetAClue();
 						///Display each clue when found
-						clueText.text = ("Clue found: " + ClueMaster.mostRecentClue);
+						arenaUIMan.clueText.text = ("Clue found: " + ClueMaster.mostRecentClue);
 //					}
 //				//}
 //			}
-		}
-		else {
-			clueText.text = "Max number of clues found. Access Hideout computer to solve event";
-		}
+			}	
+			else {
+				arenaUIMan.clueText.text = "Max number of clues found. Access Hideout computer to solve event";
+			}
+		//}
+		//else {
+
+		//}
 	}
 
 

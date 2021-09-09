@@ -61,6 +61,7 @@
     <Compile Include="Assets\Scripts\InteractionScripts\Interactable.cs" />
     <Compile Include="Assets\Scripts\InteractionScripts\SceneTransitionInteractor.cs" />
     <Compile Include="Assets\Scripts\NodeManager.cs" />
+    <Compile Include="Assets\DetectiveUIManager.cs" />
     <Compile Include="Assets\Scripts\NodeDetails.cs" />
     <Compile Include="Assets\TutorialInfo\Scripts\Readme.cs" />
     <Compile Include="Assets\Scripts\MapSceneManager.cs" />
@@ -68,7 +69,8 @@
     <Compile Include="Assets\Scripts\CrimeManager.cs" />
     <Compile Include="Assets\Scripts\MapMovement.cs" />
     <Compile Include="Assets\Scripts\PlayerMove.cs" />
-    <Compile Include="Assets\DetectiveUIManager.cs" />
+    <Compile Include="Assets\DetectiveUIInteractor.cs" />
+    <Compile Include="Assets\ArenaSceneUIManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

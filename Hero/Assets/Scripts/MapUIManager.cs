@@ -19,8 +19,8 @@ public class MapUIManager : MonoBehaviour {
 	Color bgOffColor = new Color(1, 1, 1, 0f);
 
 
-	void Awake() {
-        
+	void Start() {
+		
     }
 
 

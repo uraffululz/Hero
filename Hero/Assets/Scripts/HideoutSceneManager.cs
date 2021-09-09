@@ -8,6 +8,7 @@ public class HideoutSceneManager : MonoBehaviour {
 	//public GameObject exitDoor;
 	//public GameObject computer;
 
+	[SerializeField] GameObject player;
 
 
 	
@@ -19,6 +20,11 @@ public class HideoutSceneManager : MonoBehaviour {
     void Update() {
 		
     }
+
+
+	public void AllowPlayerMove(bool allow) {
+		player.GetComponent<PlayerMove>().canMove = allow;
+	}
 
 
 	//public void CreateEvent() {

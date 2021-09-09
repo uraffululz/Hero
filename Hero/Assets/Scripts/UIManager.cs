@@ -7,16 +7,19 @@ public class UIManager : MonoBehaviour {
 
 	[SerializeField] GameObject interactUI;
 
+	[SerializeField] Button detectiveUIButton;
+
 	GameObject player;
 
 
 
     void Awake() {
-        player = GameObject.FindGameObjectWithTag("Player");
-    }
+		player = GameObject.FindGameObjectWithTag("Player");
+		DetermineDetectiveUIAccess();
+	}
 
 
-    void Update() {
+	void Update() {
         
     }
 
@@ -29,7 +32,7 @@ public class UIManager : MonoBehaviour {
 
 	public void CloseUI(GameObject UItoClose) {
 		UItoClose.SetActive(false);
-		player.GetComponent<PlayerMove>().canMove = true;
+		//player.GetComponent<PlayerMove>().canMove = true;
 	}
 
 
@@ -41,5 +44,28 @@ public class UIManager : MonoBehaviour {
 
 	public void DeactivateInteractUI () {
 		interactUI.SetActive(false);
+	}
+
+
+	public void DetermineDetectiveUIAccess () {
+		Text detectiveUIButtonText = detectiveUIButton.GetComponentInChildren<Text>();
+
+		if (ClueMaster.eventOngoing) {
+			if (ClueMaster.eventUncovered) {
+				detectiveUIButton.interactable = false;
+				detectiveUIButtonText.text = "SOLVED";
+				detectiveUIButtonText.color = Color.green;
+			}
+			else {
+				detectiveUIButton.interactable = true;
+				detectiveUIButtonText.text = "SOLVE EVENT";
+				detectiveUIButtonText.color = Color.black;
+			}
+		}
+		else {
+			detectiveUIButton.interactable = false;
+			detectiveUIButtonText.text = "INACCESSIBLE";
+			detectiveUIButtonText.color = Color.red;
+		}
 	}
 }

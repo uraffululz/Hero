@@ -13,12 +13,12 @@ public static class CrimeManager {
 	public static ClueMaster.gangs gangInvolved;
 	
 	public static ClueMaster.attackTypes activity;
-	public static bool isEvent = false;
+	public static bool isEvent = true;
 	public static bool isHighTier = false;
 
-	public static int currentCrimeRate;
+	public static int currentCrimeRate = 1;
 	static int crimeRate;
-	public static string crimeStars;
+	public static string crimeStars = "*";
 	static bool HTCrimeRateSet = false;
 	static int HTCrimeRate;
 	static int eventCrimeRate;
