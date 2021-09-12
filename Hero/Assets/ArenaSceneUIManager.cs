@@ -17,7 +17,7 @@ public class ArenaSceneUIManager : MonoBehaviour {
 	[SerializeField] GameObject completionDisplay;
 	public Text completionText;
 	public Text notorietyText;
-	public Text eventResults;
+	//public Text eventResults;
 	public Text clueText;
 
 
@@ -47,12 +47,15 @@ public class ArenaSceneUIManager : MonoBehaviour {
 	}
 
 
-	public void OpenCompletionDisplay() {
+	public void OpenCompletionDisplay(string completion, string clue, string notorietyString, Color completionColor) {
 		///Display "activity completion" UI menu
+		completionText.text = completion;
+		completionText.color = completionColor;
+		clueText.text = clue;
+		notorietyText.text = notorietyString;
+
 		completionDisplay.SetActive(true);
 		///completionDisplay.GetComponent<Animator>().SetBool("compActivated", true);
-
-
 	}
 
 

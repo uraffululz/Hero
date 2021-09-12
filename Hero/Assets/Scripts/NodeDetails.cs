@@ -46,11 +46,11 @@ public class NodeDetails : MonoBehaviour {
 		}
 		//SetMyGangInfluence();
 
-		DetermineIfEventHappeningHere();
 	}
 
 
 	void Start () {
+		DetermineIfEventHappeningHere();
 
 		//SetupMyNeighborhood();
 
@@ -89,7 +89,7 @@ public class NodeDetails : MonoBehaviour {
 			if (isEventHappeningHere) {
 				//CrimeManager.isHighTierActivityHere = true;
 				//CrimeManager.SetHTCrimeRates(ClueMaster.attackType, isEventHappeningHere, ClueMaster.gang, myLocation);
-				CrimeManager.SetCrime(true, true, myLocation, ClueMaster.gang);
+				CrimeManager.SetCrime(true, false, myLocation, ClueMaster.gang);
 				activityColor = Color.green;
 			}
 			else if (myLocation == MapSceneManager.HTLocation) {// && MapSceneManager.HTActivity != ClueMaster.attackTypes.none) {
@@ -136,6 +136,7 @@ public class NodeDetails : MonoBehaviour {
 	void DetermineIfEventHappeningHere() {
 		if (ClueMaster.eventOngoing && ClueMaster.eventUncovered && ClueMaster.nightsUntilEventEnds > 0) {
 			if (ClueMaster.location == myLocation) {
+				Debug.Log("An event is happening at the " + name + ". It should be GREEN");
 				GetComponent<MeshRenderer>().material.color = Color.green;
 				isEventHappeningHere = true;
 				//myHighTierActivity = ClueMaster.attackType;

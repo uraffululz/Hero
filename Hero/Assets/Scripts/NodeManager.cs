@@ -20,6 +20,8 @@ public class NodeManager : MonoBehaviour {
 
 	void Awake() {
 		//DNCycle = GameObject.FindGameObjectWithTag("DayNightLight").GetComponent<DayNightCycle>();
+		InitiateGangWars(2);
+
 	}
 
 
@@ -30,7 +32,6 @@ public class NodeManager : MonoBehaviour {
 
 	void Start () {
 		//DNCycle.daylightEvent += GangWarOnNode;
-		InitiateGangWars(2);
 		//mapSceneMan.SetHighTierParameters();
 	}
 

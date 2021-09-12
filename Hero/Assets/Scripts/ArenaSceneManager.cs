@@ -74,7 +74,7 @@ public class ArenaSceneManager : MonoBehaviour {
 	void Update () {
 		if (Keyboard.current.spaceKey.wasPressedThisFrame) {
 			if (activityStarted) {
-				ActivityCompletion(true, "Activity Success", "", "");//, "");
+				ActivityCompletion(true);
 			}
 			else {
 				arenaUIMan.CloseActivityStartUI();
@@ -84,7 +84,7 @@ public class ArenaSceneManager : MonoBehaviour {
 
 		if (Keyboard.current.fKey.wasPressedThisFrame) {
 			arenaUIMan.CloseActivityStartUI();
-			ActivityCompletion(false, "Activity Failed", "", "");//, "");
+			ActivityCompletion(false);
 		}
 	}
 
@@ -214,60 +214,79 @@ public class ArenaSceneManager : MonoBehaviour {
 	}
 
 
-	public void ActivityCompletion(bool succeeded, string completionText, string clueText, string eventText) {//, string notorietyText) {
-		arenaUIMan.completionText.text = completionText;
-		arenaUIMan.eventResults.text = "";
+	public void ActivityCompletion(bool succeeded) {//, string notorietyText) {
+		string completionText = "";
+		//string eventText = "";
+		string clueText = "";
+		string notorietyText = "";
+		Color completionColor = Color.white;
+
+		int baseNotoriety = 10 * CrimeManager.currentCrimeRate;
 
 		if (succeeded) {
-			gainedNotoriety += (CrimeManager.isHighTier) ? (int)150 * CrimeManager.currentCrimeRate : (int)100 * CrimeManager.currentCrimeRate;
-			print("High Tier = " + CrimeManager.isHighTier + "Difficulty: " + CrimeManager.currentCrimeRate + " | " + "Notoriety = " + gainedNotoriety);
+			completionText = "ACTIVITY SUCCEEDED";
+			//gainedNotoriety += (CrimeManager.isHighTier) ? (int)150 * CrimeManager.currentCrimeRate : (int)100 * CrimeManager.currentCrimeRate;
+			//print("High Tier = " + CrimeManager.isHighTier + "Difficulty: " + CrimeManager.currentCrimeRate + " | " + "Notoriety = " + gainedNotoriety);
 
-			DetermineEventProgress();
+			clueText = DetermineEventProgress();
 
 ///Keep the following if-statement for later, when obtaining a clue after success is not 100% guaranteed
 			///if (ClueMaster.eventOngoing) {
 				if (CrimeManager.isEvent) {
-					arenaUIMan.clueText.text = "";
-					arenaUIMan.eventResults.text = "EVENT COMPLETED";
+				baseNotoriety *= (int) 2f;
+
+				clueText = "";
+					completionText = "EVENT COMPLETED";
+					completionColor = Color.green;
 					//ClueMaster.EventSuccess();
 					ClueMaster.ResetEvent();
 				}
+				else if (CrimeManager.isHighTier) {
+				baseNotoriety *= (int) 1.5f;
+
+				completionColor = Color.yellow;
+					//MapSceneManager.ResetHighTier();
+				}
 			///}
-///TOMAYBEDO In the case that there is no "else" concerning the status of ClueMaster.eventOngoing (basically if obtaining a clue is NOT 100% certain), combine the above "if" statements
+			///TOMAYBEDO In the case that there is no "else" concerning the status of ClueMaster.eventOngoing (basically if obtaining a clue is NOT 100% certain), combine the above "if" statements
 		}
 		else {
 			//Debug.Log("Activity FAILED");
-			//completionText.text = "Activity Failed";
-			gainedNotoriety -= (CrimeManager.isHighTier) ? (int) 150 * CrimeManager.currentCrimeRate : (int) 100 * CrimeManager.currentCrimeRate;
-			print("High Tier = " + CrimeManager.isHighTier + "Difficulty: " + CrimeManager.currentCrimeRate + " | " + "Notoriety = " + gainedNotoriety);
+			completionText = "ACTIVITY FAILED";
 
-			if (ClueMaster.eventOngoing) {
+			baseNotoriety  *= (int) -1f;
+			//gainedNotoriety -= (CrimeManager.isHighTier) ? (int) 150 * CrimeManager.currentCrimeRate : (int) 100 * CrimeManager.currentCrimeRate;
+			//print("High Tier = " + CrimeManager.isHighTier + "Difficulty: " + CrimeManager.currentCrimeRate + " | " + "Notoriety = " + gainedNotoriety);
+			
+			///if (ClueMaster.eventOngoing) {
 				if (CrimeManager.isEvent) {
-					arenaUIMan.clueText.text = "";
-					arenaUIMan.eventResults.text = "EVENT FAILED";
+					clueText = "";
+					completionText = "EVENT FAILED";
+					completionColor = Color.red;
 					//ClueMaster.EventFailure();
 					ClueMaster.ResetEvent();
 				}
 				else {
-					arenaUIMan.clueText.text = "No clue found";
+					clueText = "No clue found";
 				}
-			}
-			else {
-				arenaUIMan.clueText.text = "No clue found";
-			}
+			///}
+			///else {
+			///	clueText = "No clue found";
+			///}
 		}
 
-		if (CrimeManager.activityLoc == MapSceneManager.HTLocation) {// && NodeDetails.myHighTierActivity != ClueMaster.attackTypes.none) {
-
+		//if (CrimeManager.isHighTier) {//CrimeManager.activityLoc == MapSceneManager.HTLocation) {// && NodeDetails.myHighTierActivity != ClueMaster.attackTypes.none) {
+			//completionColor = Color.yellow;
 			MapSceneManager.ResetHighTier();
-		}
+		//}
 
-		///Add the gainedNotoriety total to the player's notoriety stat and display both amounts
+		///Add the gainedNotoriety total to the player's notoriety stat and display both amounts (gains from activity, and total overall notoriety)
 		///StatsPlayer.notoriety += gainedNotoriety;
+		gainedNotoriety = baseNotoriety;
 		string gainedOrLost = ((gainedNotoriety >= 0) ? "Notoriety gained: " : "Notoriety lost: ");
-		arenaUIMan.notorietyText.text = (gainedOrLost + gainedNotoriety);/// + " || Total: " + StatsPlayer.notoriety);
+		notorietyText = (gainedOrLost + gainedNotoriety);/// + " || Total: " + StatsPlayer.notoriety);
 
-		arenaUIMan.OpenCompletionDisplay();
+		arenaUIMan.OpenCompletionDisplay(completionText, clueText, notorietyText, completionColor);
 	}
 
 	#region Hopefully Obsolete Code
@@ -343,7 +362,7 @@ public class ArenaSceneManager : MonoBehaviour {
 	#endregion
 
 
-	void DetermineEventProgress () {
+	string DetermineEventProgress () {
 		///%Chance of finding a clue is based on CrimeManager.currentCrimeRate
 		
 ////TODO Knock down to 10% chance or so later (ALSO DO THE SAME ELSEWHERE, WHENEVER DETERMINING "chanceClueFound")
@@ -373,13 +392,13 @@ public class ArenaSceneManager : MonoBehaviour {
 						ClueMaster.UncoverEventElement();
 						//ClueMaster.GetAClue();
 						///Display each clue when found
-						arenaUIMan.clueText.text = ("Clue found: " + ClueMaster.mostRecentClue);
+						return "Clue found: " + ClueMaster.mostRecentClue;
 //					}
 //				//}
 //			}
 			}	
 			else {
-				arenaUIMan.clueText.text = "Max number of clues found. Access Hideout computer to solve event";
+				return "Max number of clues found. Access Hideout computer to solve event";
 			}
 		//}
 		//else {

@@ -242,18 +242,18 @@ public static class ClueMaster {
 	}
 
 	#region hopefully obsolete code
-	public static void EventSuccess() {
-		Debug.Log("You successfully completed the event");
-		//notifyResultsOfEventFailure = false;
-		ResetEvent();
-	}
+	//public static void EventSuccess() {
+	//	Debug.Log("You successfully completed the event");
+	//	//notifyResultsOfEventFailure = false;
+	//	ResetEvent();
+	//}
 
 
-	public static void EventFailure() {
-		Debug.Log("You failed the event");
-		//notifyResultsOfEventFailure = true;
-		ResetEvent();
-	}
+	//public static void EventFailure() {
+	//	Debug.Log("You failed the event");
+	//	//notifyResultsOfEventFailure = true;
+	//	ResetEvent();
+	//}
 	#endregion
 
 
